@@ -1,0 +1,28 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+    <file>cursors/cursor_zoom.png</file>
+    <file>cursors/Pointer.png</file>
+    <file>cursors/cursor_zoom_32x32.png</file>
+    <file>SeqFileProcessing2D.png</file>
+    <file>icons/addPoint.png</file>
+    <file>icons/joinTracks.png</file>
+    <file>icons/pan.png</file>
+    <file>icons/removePoint.png</file>
+    <file>icons/splitTracks.png</file>
+    <file>icons/zoom.png</file>
+    <file>icons/polyRemovePoint.png</file>
+    <file>icons/polyRemoveInvPoint.png</file>
+    <file>icons/selectPoint.png</file>
+    <file>icons/RemovePointFromTrack.png</file>
+    <file>icons/AddPointToTrack.png</file>
+    <file>icons/removeTrack.png</file>
+    <file>icons/PolyRemoveTrack.png</file>
+    <file>icons/polyCreateTrackOfPoint.png</file>
+    <file>icons/Reset.png</file>
+    <file>icons/None.png</file>
+    <file>icons/undo.png</file>
+    <file>icons/ok.png</file>
+    <file>icons/ok_grayed.png</file>
+    <file>icons/toggle_points.png</file>
+</qresource>
+</RCC>

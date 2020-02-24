@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=SeqFileProcessing2D
+GenericName=SeqFileProcessing2D
+Comment=Process *.seq Sequences
+Exec=SeqFileProcessing2D %f
+Icon=/usr/local/share/icons/SeqFileProcessing2D.png
+Categories=Graphics;Science;Biology;
+MimeType=video/mp4;application/x-extension-seq;
