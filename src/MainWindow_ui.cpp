@@ -1,4 +1,4 @@
-/* 
+ /* 
  * Copyright (C) 2020 Christian Kröner, University of Warwick 
  *
  * This file is part of SeqFileProcessing2D.
@@ -75,10 +75,13 @@
 #endif
 #include <unistd.h>
 #include <time.h>
+extern "C" {
 #include <libavcodec/avcodec.h>
-#include <time.h>
+}
 #include <sstream>
 #include <iomanip>
+#include "AnimationParameterWidget.h"
+#include "CodecParameterWidget.h"
 
 using namespace std;
 using namespace cv;
@@ -216,6 +219,24 @@ void MainWindow::createDockWindows()
     displayParam = new DisplaySettingsParameterWidget();
     dock->setWidget(displayParam);
     addDockWidget(Qt::LeftDockWidgetArea,dock);
+    viewMenu->addAction(dock->toggleViewAction());
+    dock->hide();
+
+    dock = new QDockWidget(tr("Animation Parameter"), this);
+    dock->setObjectName("Animation Parameter");
+    dock->setAllowedAreas(Qt::RightDockWidgetArea);
+    aniParam = new AnimationParameterWidget();
+    dock->setWidget(aniParam);
+    addDockWidget(Qt::RightDockWidgetArea,dock);
+    viewMenu->addAction(dock->toggleViewAction());
+    dock->hide();
+
+    dock = new QDockWidget(tr("Codec Parameter"), this);
+    dock->setObjectName("Codec Parameter");
+    dock->setAllowedAreas(Qt::RightDockWidgetArea);
+    codecParam = new CodecParameterWidget();
+    dock->setWidget(codecParam);
+    addDockWidget(Qt::RightDockWidgetArea,dock);
     viewMenu->addAction(dock->toggleViewAction());
     dock->hide();
 

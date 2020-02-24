@@ -74,7 +74,7 @@ public:
     vector<cv::Point2f> getAllPos(unsigned long n,unsigned long m, bool isTrigger = false);
     vector<double> getPointMeta(unsigned long n,unsigned long m, bool isTrigger = false);
     vector<double> getPointMeta(unsigned long n, bool isTrigger = false);
-    vector<vector<double> > getAllPosAsVector(unsigned long i, int select=1, bool isTrigger = false);
+    vector<vector<double> > getAllPosAsVector(unsigned long i, bool isTrigger = false);
     int getNumOfAllPos();
     int loadFromFile(string filename, bool enableDynamic = false, bool displayStatus  = false );
     int loadFromFile(string filename, unsigned long rstart, unsigned long rstop , bool enableDynamic = false, bool displayStatus = false );

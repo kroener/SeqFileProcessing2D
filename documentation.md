@@ -17,16 +17,16 @@ Step 2. and 3. require some parameters to be adjusted.
 **Threshold**: A histogram of the difference is created and a grey scale difference threshold is calculated by taking the x percent of the distance between the value with the maximum counts to the maximum value with least a count of one.    
 **MinThreshold**: If the Threshold is below MinThreshold, Threshold will be set to minThreshold  
 **Use the ith**: Generate difference from image(n) and image(n-i)  
-**Remove BG**: Shrink the blobs by eroding with an n sized square, than dilating with the same sized stancil  
+**Remove BG**: Shrink the blobs by eroding with an n sized square, than dilating with the same sized stencil  
 **Add FG**: Same as Remove BG, but first dilate, than erode.  
 **ClusterDist**: This discards points too close together. Keeping only the stronger one in a radius of x   
 **Display each N**: For displaying, to speed up processing, you can skip displaying frames. Only each n-th is shown. 0 disables display completely.  
 **Black On White**: Select whether to search dark spots on light background or light spots on dark backgrounds.  
 **medianBlur1**: Apply median blur to input images before building difference image.  
 **medianBlur2**: Apply median blur to the difference image.  
-**gaussian kernel 1**: Apply gaussian kernel to images before creating the difference image  
+**gaussian kernel 1**: Apply Gaussian kernel to images before creating the difference image  
 **gaussian sigma 1**: "   
-**gaussian kernel 2**: Applying gaussian kernel to the difference image  
+**gaussian kernel 2**: Applying Gaussian kernel to the difference image  
 **gaussian sigma 2**: "  
 **Mask Threshold**: A threshold is applied to the original pictures, only pixels from 0 to threshold or (if a negative value is specified) from -threshold to 255 are selected.  
 
@@ -45,3 +45,20 @@ Step 2. and 3. require some parameters to be adjusted.
 **append**: Overwrite or append the tracking results  
 **MaxDist(aj)**: For the autojoiner, set maximum distance between track end and track start for tracks to join  
 **MaxGap(aj)**: For the autojoiner, set the maximum number of skipped frames  
+
+## Metadata
+While recording on multiple cameras, one needs to identify which frames belong together. We utilise the metadata file format from Norpix's StreamPix. 
+To generate such files, we can use the tool txt2meta, which takes a simple text file as input, describing per line the frame number, trigger number, epoch time in seconds, milli seconds and micro seconds.
+As a simple example a video of 5 frames length recorded at 15 fps starting from "Mon 24 Feb 22:38:29 CET 2020" would look like:
+```
+0 1 1582580319 0 0
+1 2 1582580319 66 667
+2 3 1582580319 133 333
+3 4 1582580319 200 0
+4 5 1582580319 266 667
+```
+The usage of metadata information also allows to specify the time for frames in a video. The actual timings of the recorded video is ignored, which allows to store the video efficiently with full timing information.
+
+## Additional tools
+We added a command line version of the segmentation and tracking steps, which can be found under tools directory.
+There is an additional tool to generate some test data, and a tool to compare position files. All tools can be build using qmake.

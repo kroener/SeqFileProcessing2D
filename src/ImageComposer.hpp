@@ -54,8 +54,11 @@ public:
     int setT(MosquitoRegistry* t, int c, int r);
     MosquitoesInSeq* currMosqPos();
     MosquitoRegistry* currTracks();
+    vector<cv::Point2f> getAllPos(long i);
     int getMinTrigger();
     int getMaxTrigger();
+    int getHeight();
+    int getWidth();
 
     Image<unsigned char>* getImage(int i);
     bool haveImage(int t);

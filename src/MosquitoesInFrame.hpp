@@ -190,6 +190,7 @@ public:
     int filterByInertia(double I, bool invert = false);
     int filterByConvexity(double I, bool invert = false);
     void setKeepMeFlag(bool b);
+
 private:
     vector<MosquitoPosition> mpos;
     double maxDiff;

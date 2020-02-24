@@ -73,10 +73,12 @@
 #endif
 #include <unistd.h>
 #include <time.h>
+extern "C" {
 #include <libavcodec/avcodec.h>
-#include <time.h>
+}
 #include <sstream>
 #include <iomanip>
+#include "MyVideoWriter.hpp"
 
 using namespace std;
 using namespace cv;
@@ -1000,3 +1002,225 @@ vector<cv::Point> MainWindow::loadPolyFromFile(const QString &fileName)
     return outPoly;
 }
 
+bool MainWindow::save_animation(const QString &fileName)
+{
+    int drawTracks=aniParam->getDrawTracks();
+    int drawPoints=aniParam->getDrawPoints();
+    int addTimeStamp=aniParam->getDrawTime();
+    int scaleImage=aniParam->getScaleOutput();
+    int colorBy=aniParam->getTrackColorMode();
+
+    Size oSize(currSeq->pointerToHeader()->width(),currSeq->pointerToHeader()->height());
+    if(!(!currSeq->hasMeta() || (displayParam->getArrayWidth()==1 && displayParam->getArrayHeight()==1))){
+     composer.setC(displayParam->getArrayWidth());
+     composer.setR(displayParam->getArrayHeight());
+     for(int i=0; i<displayParam->getArrayWidth();i++)
+      for(int j=0; j<displayParam->getArrayHeight();j++)
+     {
+       iSeq* in=m_player->getSeqPointer(i,j);
+       if(in)
+       {
+        composer.setSeq(in,i,j);
+       }
+       MosquitoesInSeq* pin=m_player->getMosqPointer(i,j);
+       if(pin)
+       {
+         composer.setP(pin,i,j);
+       }
+       MosquitoRegistry* tin=m_player->getTrackPointer(i,j);
+       if(tin)
+       {
+         composer.setT(tin,i,j);
+       }
+     }
+     oSize.width=composer.getWidth();
+     oSize.height=composer.getHeight();
+    }
+    if(scaleImage)
+    {
+     int orig=oSize.width;
+     oSize.width=aniParam->getOutputWidth();
+     oSize.height*=(double)oSize.width/(double)orig;
+    }
+    Scalar pointColor=Scalar(aniParam->getColorPointB(),aniParam->getColorPointG(),aniParam->getColorPointR());
+    Scalar trackColor=Scalar(aniParam->getColorTrackB(),aniParam->getColorTrackG(),aniParam->getColorTrackR());
+    int pRadius=aniParam->getPointRadius();
+    int trackThickness=aniParam->getTrackThickness();
+    int trackL=aniParam->getTrackLength();
+    int minTrackL=aniParam->getTrackMinLength();
+    int numTasks = toFrame-fromFrame+1;
+    QProgressDialog progress("Saving animation file...", "Cancel", 0, numTasks, this);
+    progress.setMinimumDuration(100);
+    progress.setWindowModality(Qt::WindowModal);
+
+    MyVideoWriter::Settings vset;
+    vset.w=oSize.width;
+    vset.h=oSize.height;
+    vset.bit_rate=codecParam->getBitrate();
+    vset.timebasenum=codecParam->getFrameNum();
+    vset.timebaseden=codecParam->getFrameDen();
+    vset.useCrf=codecParam->getUseCrf();
+    vset.crf=codecParam->getCrf();
+    int codecID=codecParam->getCodec();
+    int hardwareCodec=codecParam->getHardware();
+    vset.by_name=0;
+    if(codecID==0)
+    {
+        vset.video_codec=AV_CODEC_ID_H264;
+        if(hardwareCodec==1)
+        {
+            vset.codec_by_name="h264_nvenc";
+            vset.by_name=1;
+        }
+    }
+    else if(codecID==1)
+    {
+        vset.video_codec=AV_CODEC_ID_HEVC;
+        if(hardwareCodec==1)
+        {
+            vset.codec_by_name="hevc_nvenc";
+            vset.by_name=1;
+        }
+    }
+    MyVideoWriter video(fileName.toUtf8().constData(),vset);
+
+    if(!currSeq->hasMeta() || (displayParam->getArrayWidth()==1 && displayParam->getArrayHeight()==1)){
+    for(unsigned long i=fromFrame;i<=toFrame;i+=FrameStep)
+    {
+        currSeq->loadImage(i);
+        Image<unsigned char>* timg = currSeq->getImagePointer(0);
+        Mat im=timg->image();
+        cvtColor(im, im, COLOR_GRAY2RGB);
+        if(drawTracks)
+        {
+             vector<vector<Point2f> > cvtracks=currReg->getAllTracks(i,trackL,minTrackL);
+             vector<vector<Scalar> > colors=currReg->getTrackMetaForAni(i,trackL, minTrackL, colorBy, 0, currSeq->allocatedFrames());
+             for (unsigned int j=0; j<cvtracks.size(); j++)
+             {
+                 for(unsigned int jj=0; jj<cvtracks[j].size()-1; jj++)
+                 {
+                     if(colorBy==0)
+                     {
+                      line( im, cvtracks[j][jj],  cvtracks[j][jj+1], trackColor, trackThickness, 8 );
+                     }
+                     else
+                     {
+                      line( im, cvtracks[j][jj],  cvtracks[j][jj+1], colors[j][jj], trackThickness, 8 );
+                     }                     
+                 }
+             }
+        }
+        if(drawPoints)
+        {
+            vector<Point2f> mp=currMosqPos->getAllPos(i);
+            for(unsigned j=0; j<mp.size(); j++)
+            {
+                circle(im,mp[j],pRadius,pointColor,-1,8);
+            }
+        }
+        if(addTimeStamp)
+        {
+            time_t rawtime=timg->getTsec();
+            int msecs=timg->getTmsec();
+            int usecs=timg->getTusec();
+            struct tm * ptm;
+            ptm = gmtime ( &rawtime );
+            char tbuf [80];
+            strftime (tbuf,80,"%A, %B %d, %Y %H:%M:%S",ptm);
+            char buff[100];
+            snprintf(buff, sizeof(buff), "%s:%03d:%03d", tbuf,msecs,usecs);
+            string buffAsStdStr = buff;
+            int fontFace = FONT_HERSHEY_SIMPLEX;
+            double fontScale = 1.5;
+            int thickness = 1;
+            int baseline=0;
+            Size textSize = getTextSize(buffAsStdStr, fontFace,
+                            fontScale, thickness, &baseline);
+            baseline += thickness;
+            Point textOrg((im.cols-textSize.width)/2, im.rows-16);
+            putText(im, buffAsStdStr, textOrg, fontFace, fontScale, Scalar::all(255), thickness,8);
+        }
+        if(scaleImage)
+        {
+            Mat tmp=im.clone();
+            cv::resize(tmp,im,oSize);
+        }
+        video.add(im);
+
+        progress.setValue(i-fromFrame);
+        if (progress.wasCanceled())
+           break;
+    }
+    }
+    else{
+       for(int i=currSeq->metaData(fromFrame);i<=currSeq->metaData(toFrame);i+=FrameStep)
+       {
+         if(composer.haveImage(i)){
+            Image<unsigned char>* timg=composer.getImage(i);
+            Mat im=timg->image();
+            cvtColor(im, im, COLOR_GRAY2RGB);
+            if(drawTracks)
+            {
+                 vector<vector<Point2f> > cvtracks=composer.currTracks()->getAllTracks(i,trackL,minTrackL);
+                 vector<vector<Scalar> > colors=composer.currTracks()->getTrackMetaForAni(i,trackL, minTrackL, colorBy, 0.0, (double) currSeq->allocatedFrames());
+                 for (unsigned int j=0; j<cvtracks.size(); j++)
+                 {
+                     for(unsigned int jj=0; jj<cvtracks[j].size()-1; jj++)
+                     {
+                         if(colorBy==0)
+                         {
+                          line( im, cvtracks[j][jj],  cvtracks[j][jj+1], trackColor, trackThickness, 8 );
+                         }
+                         else
+                         {
+                          line( im, cvtracks[j][jj],  cvtracks[j][jj+1], colors[j][jj], trackThickness, 8 );
+                         }                     
+                     }
+                 }
+            }
+            if(drawPoints)
+            {
+                vector<Point2f> mp=composer.getAllPos(i);
+                for(unsigned j=0; j<mp.size(); j++)
+                {
+                   circle(im,mp[j],pRadius,pointColor,-1,8);
+                }
+            }
+            if(addTimeStamp)
+            {
+                time_t rawtime=timg->getTsec();
+                int msecs=timg->getTmsec();
+                int usecs=timg->getTusec();
+                struct tm * ptm;
+                ptm = gmtime ( &rawtime );
+                char tbuf [80];
+                strftime (tbuf,80,"%A, %B %d, %Y %H:%M:%S",ptm);
+                char buff[100];
+                snprintf(buff, sizeof(buff), "%s:%03d:%03d", tbuf,msecs,usecs);
+                string buffAsStdStr = buff;
+                int fontFace = FONT_HERSHEY_SIMPLEX;
+                //FONT_HERSHEY_SCRIPT_SIMPLEX;
+                double fontScale = 1.5;
+                int thickness = 1;
+                int baseline=0;
+                Size textSize = getTextSize(buffAsStdStr, fontFace,
+                                fontScale, thickness, &baseline);
+                baseline += thickness;
+                Point textOrg((im.cols-textSize.width)/2, im.rows-16);
+                putText(im, buffAsStdStr, textOrg, fontFace, fontScale, Scalar::all(255), thickness,8);
+            }
+            if(scaleImage)
+            {
+                Mat tmp=im.clone();
+                cv::resize(tmp,im,oSize);
+            }
+            video.add(im);
+            progress.setValue(currSeq->lookUpTrigger(i)-fromFrame);
+            if (progress.wasCanceled())
+               break;
+         }
+       }
+    }
+    progress.setValue(numTasks);
+    return true;
+}

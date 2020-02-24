@@ -731,3 +731,4 @@ void MosquitoesInFrame::setKeepMeFlag(bool b)
 {
  for(int i=0; i<mpos.size(); i++) mpos[i].setFlag(MosquitoPosition::flagType::KEEPME,b);
 }
+

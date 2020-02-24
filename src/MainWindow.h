@@ -49,6 +49,8 @@
 #include <algorithm>
 #include "MosquitoRegistry.hpp"
 #include "TrackPoint.hpp"
+#include "AnimationParameterWidget.h"
+#include "CodecParameterWidget.h"
 #if CV_MAJOR_VERSION < 3
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
@@ -189,6 +191,7 @@ private:
     void updateTableOfTracks();
     void setCurrentFile(const QString &fileName);
     void updateRecentFileActions();
+    bool save_animation(const QString &fileName);
     //MainWindow_functions
     bool backupPos(unsigned int n, bool force = false);
     bool backupTracks(unsigned int n);
@@ -197,12 +200,15 @@ private:
     int seqPointerToSeqNum(iSeq* sp);
     void updatePointerOfTracks(int c, int r);
     QString strippedName(const QString &fullFileName);
+
     //Variables
     VideoPlayerWidget *m_player;
     SeqInfoWidget *seqInfo;
     FrameSelectWidget *frameSelect;
     SegParameterWidget *segParam;
     TrackingParameterWidget *trackParam;
+    AnimationParameterWidget *aniParam;
+    CodecParameterWidget *codecParam;
     DisplaySettingsParameterWidget *displayParam;
     HistogramWidget *Histogram;
     GraphWidget *Graph;
@@ -398,6 +404,7 @@ private slots:
     void on_mouseRelease(QPoint m, int c, int r,int dx, int dy);
     void on_mouseClicked(QPoint m, int c, int r);
     void on_m_player_keyPressEvent(QKeyEvent* key);
+    void on_CreateAnimationParams_clicked();
     void clearCustomSettings();
     void pTableClicked(int row,int col);
     void tTableClicked(int row,int col);

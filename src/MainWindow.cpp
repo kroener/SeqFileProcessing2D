@@ -56,6 +56,8 @@
 #include <algorithm>
 #include "MosquitoRegistry.hpp"
 #include "TrackPoint.hpp"
+#include "AnimationParameterWidget.h"
+#include "CodecParameterWidget.h"
 #if CV_MAJOR_VERSION < 3
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
@@ -74,7 +76,9 @@
 #endif
 #include <unistd.h>
 #include <time.h>
+extern "C" {
 #include <libavcodec/avcodec.h>
+}
 #include <time.h>
 #include <sstream>
 #include <iomanip>
@@ -135,6 +139,8 @@ MainWindow::MainWindow()
     connect(trackParam, SIGNAL(minTrackDisplayLengthValueChanged(int)), m_player, SLOT(set_MinTrackDisplayLength(int)));
     connect(trackParam, SIGNAL(trackDisplayLengthValueChanged(int)), m_player, SLOT(set_trackDisplayLength(int)));
     connect(trackParam, SIGNAL(appendOrOverwriteValueChanged(int)), this, SLOT(update_TrackAppendOrOverwrite(int)));
+
+    connect(aniParam, SIGNAL(onCreateAnimationClicked()), this, SLOT(on_CreateAnimationParams_clicked()));
 
     minA=segParam->getMinA();
     maxA=segParam->getMaxA();

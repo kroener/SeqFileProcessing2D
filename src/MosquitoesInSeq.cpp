@@ -429,7 +429,7 @@ int  MosquitoesInSeq::getNumOfAllPos()
     return tmp;
 }
 
-vector<vector<double> > MosquitoesInSeq::getAllPosAsVector(unsigned long i, int select /*=0*/, bool isTrigger /*= false */)
+vector<vector<double> > MosquitoesInSeq::getAllPosAsVector(unsigned long i, bool isTrigger /*= false */)
 {
     vector<vector<double> > tmp;
     MosquitoesInFrame* currentFrame=nullptr;
@@ -442,8 +442,6 @@ vector<vector<double> > MosquitoesInSeq::getAllPosAsVector(unsigned long i, int 
         for(int ii=0; ii<currentFrame->numOfMosquitoes(); ii++)
         {
             currentMosquito=currentFrame->mosqi(ii);
-            if(currentMosquito->getFlag() & select)
-            {
             vector<double> tmp2;
             tmp2.push_back(currentMosquito->getX());
             tmp2.push_back(currentMosquito->getY());
@@ -460,7 +458,6 @@ vector<vector<double> > MosquitoesInSeq::getAllPosAsVector(unsigned long i, int 
             tmp2.push_back(currentFrame->getMinThreshold());
             tmp2.push_back((double)currentFrame->getIth());
             tmp.push_back(tmp2);
-            }
         }
     }
     }
@@ -481,8 +478,6 @@ vector<vector<double> > MosquitoesInSeq::getAllPosAsVector(unsigned long i, int 
         for(int ii=0; ii<currentFrame->numOfMosquitoes(); ii++)
         {
             currentMosquito=currentFrame->mosqi(ii);
-            if(currentMosquito->getFlag() & select)
-            {
             vector<double> tmp2;
             tmp2.push_back(currentMosquito->getX());
             tmp2.push_back(currentMosquito->getY());
@@ -499,7 +494,6 @@ vector<vector<double> > MosquitoesInSeq::getAllPosAsVector(unsigned long i, int 
             tmp2.push_back(currentFrame->getMinThreshold());
             tmp2.push_back((double)currentFrame->getIth());
             tmp.push_back(tmp2);
-            }
         }
       }
      }

@@ -73,8 +73,9 @@
 #endif
 #include <unistd.h>
 #include <time.h>
+extern "C" {
 #include <libavcodec/avcodec.h>
-#include <time.h>
+}
 #include <sstream>
 #include <iomanip>
 
@@ -829,7 +830,7 @@ if(tmpP.isDynamic())
 
 int cleaned=tmpP.clean(trigger2,TrackMinD,tmpP.isTriggerBased());
 cleaned+=tmpP.clean(trigger2,TrackMinA,TrackMaxA,tmpP.isTriggerBased());
-vector<vector<double> > a=tmpP.getAllPosAsVector(trigger,18,tmpP.isTriggerBased());
+vector<vector<double> > a=tmpP.getAllPosAsVector(trigger,tmpP.isTriggerBased());
 n=a.size();
 
 int starts=0;
@@ -882,14 +883,14 @@ ids.insert(end(ids), begin(tmpLostMosquitoesIds), end(tmpLostMosquitoesIds));
 n=a.size();
 LostMosquitoes=tmpLostMosquitoes;
 LostMosquitoesIds=tmpLostMosquitoesIds;
-
 if(n>0 && m>0)
 {
 	unsigned int nrows = n;
 	unsigned int ncols = m;
 	vector<vector<double> >  matrix(n,vector<double>(m));
 	vector<vector<size_t> >  idx(n,vector<size_t>(m));
-        vector<vector<double> > b=tmpP.getAllPosAsVector(trigger2,18,tmpP.isTriggerBased());
+        vector<vector<double> > b=tmpP.getAllPosAsVector(trigger2,tmpP.isTriggerBased());
+        
         for ( unsigned int row = 0 ; row < nrows ; row++ ) {
 		for ( unsigned int col = 0 ; col < ncols ; col++ ) {
 		        idx[row][col] = col;
@@ -1718,4 +1719,19 @@ void MainWindow::on_disablePosBackup(int i)
    disablePosBackup=true;
   else
    disablePosBackup=false;
+}
+
+void MainWindow::on_CreateAnimationParams_clicked()
+{
+  if(seq.size()>0)
+  {
+    QFileDialog dialog(this);
+    dialog.setOption(QFileDialog::DontUseNativeDialog, nativeFD);
+    dialog.setFileMode(QFileDialog::AnyFile);
+    dialog.setNameFilter(tr("MP4 Video File (*.mp4)"));
+    dialog.setAcceptMode(QFileDialog::AcceptSave);
+    QFileInfo fN(QString::fromStdString(currSeq->filename()));
+    dialog.setDirectory(fN.absolutePath());
+    while (dialog.exec() == QDialog::Accepted && !save_animation(dialog.selectedFiles().first())) {}
+  }
 }

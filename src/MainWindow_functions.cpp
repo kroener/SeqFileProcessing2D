@@ -73,8 +73,9 @@
 #endif
 #include <unistd.h>
 #include <time.h>
+extern "C" {
 #include <libavcodec/avcodec.h>
-#include <time.h>
+}
 #include <sstream>
 #include <iomanip>
 #include <math.h>

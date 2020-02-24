@@ -1925,6 +1925,54 @@ void Image<T>::bwareaopen(int lowerCutOff, int upperCutOff)
   }
 }
 
+template<class T>
+int Image<T>::saveToSeq(fstream& seqFile, Header header)
+{
+    if(has_buffer)
+    {
+        if(seqFile)
+        {
+            seqFile.seekp(header.getOffset(), seqFile.beg);
+            seqFile.write((char*)buffer, sizeof(unsigned char)*header.height()*header.width());
+            seqFile.write(reinterpret_cast<char*>(&sec), sizeof(unsigned int));
+            seqFile.write(reinterpret_cast<char*>(&ms), sizeof(unsigned short));
+            if(header.streampix6())
+                seqFile.write(reinterpret_cast<char*>(&us), sizeof(unsigned short));
+            unsigned char x=0;
+            seqFile.seekp(header.getOffset()+header.trueImageSize()-1, seqFile.beg);
+            seqFile.write(reinterpret_cast<char*>(&x), sizeof(unsigned char));
+        }
+    }
+    else
+        cerr << "Error: Image has no DATA"<<endl;
+    return 0;
+}
+
+template<class T>
+int Image<T>::saveToSeq(fstream* seqFile, Header header, unsigned int i)
+{
+    if(has_buffer)
+    {
+        if(seqFile->is_open())
+        {
+            seqFile->seekp(header.imageStartOffset(i), seqFile->beg);
+            seqFile->write((char*)buffer, sizeof(unsigned char)*header.height()*header.width());
+            seqFile->write(reinterpret_cast<char*>(&sec), sizeof(unsigned int));
+            seqFile->write(reinterpret_cast<char*>(&ms), sizeof(unsigned short));
+            if(header.streampix6())
+                seqFile->write(reinterpret_cast<char*>(&us), sizeof(unsigned short));
+            unsigned char x=0;
+            seqFile->seekp(header.imageStartOffset(i)+header.trueImageSize()-1, seqFile->beg);
+            seqFile->write(reinterpret_cast<char*>(&x), sizeof(unsigned char));
+        }
+        else
+        cerr << "Error: No seqFile"<<endl;        
+    }
+    else
+        cerr << "Error: Image has no DATA"<<endl;
+    return 0;
+}
+
 
 template <>
 template <>

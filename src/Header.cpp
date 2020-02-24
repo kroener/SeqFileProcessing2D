@@ -170,3 +170,156 @@ void Header::setSeqHasMeta(int i)
 {
     seq_has_meta=i; 
 }
+
+int Header::init(int streampix6)
+{
+    ReadOnly=0;
+    Streampix6=streampix6;
+    Magic=65261;
+    for(int i=0; i<24; i++)Name[i]=0;
+    UnicodeString str("Norpix");
+    const UChar* strbuff= str.getBuffer();
+    for(int i=0; i<str.countChar32(); i++)
+        if(i<12)
+        {
+            Name[i*2]=strbuff[i] & 0xff;
+            Name[i*2+1]=(strbuff[i] >> 8) & 0xff;
+        }
+    str.releaseBuffer();
+    if(streampix6)
+        Version=5;
+    else
+        Version=4;
+    HeaderSize=1024;
+    DescriptionFormat=0;
+    for(int i=0; i<512; i++)Description[i]=0;
+    UnicodeString str2("No Description");
+    strbuff= str2.getBuffer();
+    for(int i=0; i<str2.countChar32(); i++)
+        if(i<256)
+        {
+            Description[i*2]=strbuff[i] & 0xff;
+            Description[i*2+1]=(strbuff[i] >> 8) & 0xff;
+        }
+    str2.releaseBuffer();
+
+    Width=0;
+    Height=0;
+    Depth=8;
+    RealDepth=8;
+    ImageBSize=0;
+    ImageFormat=100;
+    AllocatedFrames=0;
+    Origin=0;
+    TrueImageSize=0;
+    Framerate=0;
+    ReferenceFrame=50.;
+    FixedSize=0;
+    Flags=0;
+    BayerPattern=0;
+    Time_offset_us=0;
+    ExtendedHeaderSize=0;
+    Compression_format=0;
+    Reference_time_s=0;
+    Reference_time_ms=0;
+    Reference_time_us=0;
+    if(streampix6)ImageOffset=8192;
+    else ImageOffset=1024;
+    return 0;
+}
+
+int Header::WriteHeader(fstream& seqFile)
+{
+    if(seqFile)
+    {
+        seqFile.seekp (0, seqFile.beg);
+        seqFile.write(reinterpret_cast<char*>(&Magic), sizeof(unsigned int));
+        seqFile.write(reinterpret_cast<char*>(&Name), 24*sizeof(char));
+        seqFile.write(reinterpret_cast<char*>(&Version), sizeof(int));
+        seqFile.write(reinterpret_cast<char*>(&HeaderSize), sizeof(int));
+        seqFile.write(reinterpret_cast<char*>(&Description), sizeof(char)*512);
+        seqFile.write(reinterpret_cast<char*>(&Width), sizeof(unsigned int));
+        seqFile.write(reinterpret_cast<char*>(&Height), sizeof(unsigned int));
+        seqFile.write(reinterpret_cast<char*>(&Depth), sizeof(unsigned int));
+        seqFile.write(reinterpret_cast<char*>(&RealDepth), sizeof(unsigned int));
+        seqFile.write(reinterpret_cast<char*>(&ImageBSize), sizeof(unsigned int));
+        seqFile.write(reinterpret_cast<char*>(&ImageFormat), sizeof(unsigned int));
+        seqFile.write(reinterpret_cast<char*>(&AllocatedFrames), sizeof(unsigned int));
+        seqFile.write(reinterpret_cast<char*>(&Origin), sizeof(unsigned int));
+        seqFile.write(reinterpret_cast<char*>(&TrueImageSize), sizeof(unsigned int));
+        seqFile.write(reinterpret_cast<char*>(&Framerate), sizeof(double));
+        seqFile.write(reinterpret_cast<char*>(&DescriptionFormat), sizeof(unsigned int));
+        seqFile.write(reinterpret_cast<char*>(&ReferenceFrame), sizeof(unsigned int));
+        seqFile.write(reinterpret_cast<char*>(&FixedSize), sizeof(unsigned int));
+        seqFile.write(reinterpret_cast<char*>(&Flags), sizeof(unsigned int));
+        seqFile.write(reinterpret_cast<char*>(&BayerPattern), sizeof(unsigned int));
+        seqFile.write(reinterpret_cast<char*>(&Time_offset_us), sizeof(unsigned int));
+        seqFile.write(reinterpret_cast<char*>(&ExtendedHeaderSize), sizeof(unsigned int));
+        seqFile.write(reinterpret_cast<char*>(&Compression_format), sizeof(unsigned int));
+        seqFile.write(reinterpret_cast<char*>(&Reference_time_s), sizeof(unsigned int));
+        seqFile.write(reinterpret_cast<char*>(&Reference_time_ms), sizeof(unsigned short));
+        seqFile.write(reinterpret_cast<char*>(&Reference_time_us), sizeof(unsigned short));
+    }
+    else
+    {
+        cout<< "Could not write to File"<<endl;
+        return 1;
+    }
+    return 0;
+}
+
+int Header::WriteHeader(fstream* seqFile)
+{
+    if(seqFile->is_open())
+    {
+        seqFile->seekp (0, seqFile->beg);
+        seqFile->write(reinterpret_cast<char*>(&Magic), sizeof(unsigned int));
+        seqFile->write(reinterpret_cast<char*>(&Name), 24*sizeof(char));
+        seqFile->write(reinterpret_cast<char*>(&Version), sizeof(int));
+        seqFile->write(reinterpret_cast<char*>(&HeaderSize), sizeof(int));
+        seqFile->write(reinterpret_cast<char*>(&Description), sizeof(char)*512);
+        seqFile->write(reinterpret_cast<char*>(&Width), sizeof(unsigned int));
+        seqFile->write(reinterpret_cast<char*>(&Height), sizeof(unsigned int));
+        seqFile->write(reinterpret_cast<char*>(&Depth), sizeof(unsigned int));
+        seqFile->write(reinterpret_cast<char*>(&RealDepth), sizeof(unsigned int));
+        seqFile->write(reinterpret_cast<char*>(&ImageBSize), sizeof(unsigned int));
+        seqFile->write(reinterpret_cast<char*>(&ImageFormat), sizeof(unsigned int));
+        seqFile->write(reinterpret_cast<char*>(&AllocatedFrames), sizeof(unsigned int));
+        seqFile->write(reinterpret_cast<char*>(&Origin), sizeof(unsigned int));
+        seqFile->write(reinterpret_cast<char*>(&TrueImageSize), sizeof(unsigned int));
+        seqFile->write(reinterpret_cast<char*>(&Framerate), sizeof(double));
+        seqFile->write(reinterpret_cast<char*>(&DescriptionFormat), sizeof(unsigned int));
+        seqFile->write(reinterpret_cast<char*>(&ReferenceFrame), sizeof(unsigned int));
+        seqFile->write(reinterpret_cast<char*>(&FixedSize), sizeof(unsigned int));
+        seqFile->write(reinterpret_cast<char*>(&Flags), sizeof(unsigned int));
+        seqFile->write(reinterpret_cast<char*>(&BayerPattern), sizeof(unsigned int));
+        seqFile->write(reinterpret_cast<char*>(&Time_offset_us), sizeof(unsigned int));
+        seqFile->write(reinterpret_cast<char*>(&ExtendedHeaderSize), sizeof(unsigned int));
+        seqFile->write(reinterpret_cast<char*>(&Compression_format), sizeof(unsigned int));
+        seqFile->write(reinterpret_cast<char*>(&Reference_time_s), sizeof(unsigned int));
+        seqFile->write(reinterpret_cast<char*>(&Reference_time_ms), sizeof(unsigned short));
+        seqFile->write(reinterpret_cast<char*>(&Reference_time_us), sizeof(unsigned short));
+    }
+    else
+    {
+        cout<< "Could not write to File"<<endl;
+        return 1;
+    }
+    return 0;
+
+}
+
+int Header::update()
+{
+    ImageBSize=Width*Height;
+    if(Streampix6)
+        TrueImageSize=int((Width*Height+4+8192)/8192)*8192;
+    else
+        TrueImageSize=int((Width*Height+4+512)/512)*512;
+    return 0;
+}
+
+unsigned long long Header::getOffset()
+{
+    return (unsigned long long)TrueImageSize*AllocatedFrames+(unsigned long long)ImageOffset;
+}

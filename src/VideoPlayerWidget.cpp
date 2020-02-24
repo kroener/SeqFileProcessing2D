@@ -278,8 +278,6 @@ else
     if(metaMode) t=trigger;
     else if(seq[0][0]->hasMeta())
         t=seq[0][0]->metaData(frame[0][0]);
-    cerr<<"Trigger="<<trigger<<"\n";
-    cerr<<"t="<<t<<"\n";
     for(int c=0;c<vw;c++)
      for(int r=0;r<vh; r++)
       if(!(c==0 && r==0) && isOpen[c][r])

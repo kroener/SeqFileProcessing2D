@@ -484,3 +484,32 @@ bool ImageComposer::setTimeBasedOnCurrentSeq(int nnn/*=0*/, int mmm /*=0*/, int 
   else
    return false;
 }
+
+int ImageComposer::getHeight()
+{
+  int h=0;
+  if(ready)
+   h=height;
+  return h;
+}
+
+int ImageComposer::getWidth()
+{
+  int w=0;
+  if(ready)
+   w=width;
+  return w;
+}
+
+vector<cv::Point2f> ImageComposer::getAllPos(long i)
+{
+ if(i>=0 && i<=maxTrigger)
+ {
+  return currentPositions.getAllPos(i);
+ }
+ else
+ {
+  vector<cv::Point2f> tmp;
+  return tmp;
+ } 
+}

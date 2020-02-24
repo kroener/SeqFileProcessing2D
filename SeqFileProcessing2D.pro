@@ -31,7 +31,10 @@ SOURCES += src/main.cpp  \
            src/MyVideoReader.cpp \
            src/Metadata.cpp \
            src/DisplaySettingsParameterWidget.cpp \
-           src/ImageComposer.cpp
+           src/ImageComposer.cpp \
+           src/MyVideoWriter.cpp \
+           src/AnimationParameterWidget.cpp \
+           src/CodecParameterWidget.cpp
 HEADERS  = src/MainWindow.h  \
            src/Viewer.h \
            src/ViewerWithMouse.h \
@@ -55,7 +58,11 @@ HEADERS  = src/MainWindow.h  \
            src/MyVideoReader.hpp \
            src/Metadata.hpp \
            src/DisplaySettingsParameterWidget.h \
-           src/ImageComposer.hpp
+           src/ImageComposer.hpp \
+           src/MyVideoWriter.hpp \
+           src/AnimationParameterWidget.h \
+           src/CodecParameterWidget.h
+
 #CONFIG += debug
 CONFIG += console
 CONFIG += c++11

@@ -273,6 +273,11 @@ public:
     unsigned long long TimeStartOffset(unsigned int n);
     int seqHasMeta();
     void setSeqHasMeta(int i);
+    int init(int streampix6);
+    int WriteHeader(fstream& seqFile);
+    int WriteHeader(fstream* seqFile);
+    int update();
+    unsigned long long getOffset();
 
 private:
     unsigned int Magic;

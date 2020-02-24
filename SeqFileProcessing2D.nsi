@@ -7,6 +7,7 @@ Icon "SeqFileProcessing2D.ico"
 OutFile "SeqFileProcessing2DInstaller.exe"
 InstallDir $PROGRAMFILES64\SeqFileProcessing2D
 
+!insertmacro MUI_PAGE_LICENSE "LICENSE.txt"
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
 
@@ -17,7 +18,7 @@ InstallDir $PROGRAMFILES64\SeqFileProcessing2D
 
 Section ""
   SetOutPath $INSTDIR
-  File build-win64/SeqFileProcessing2D.exe
+  File build/SeqFileProcessing2D.exe
   File SeqFileProcessing2D.ico
   WriteUninstaller $INSTDIR\uninstall.exe
   CreateShortCut "$DESKTOP\SeqFileProcessing2D.lnk" "$INSTDIR\SeqFileProcessing2D.exe" "" "$INSTDIR\SeqFileProcessing2D.ico"

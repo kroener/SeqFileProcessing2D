@@ -41,7 +41,6 @@ extern "C" {
 #include <libavutil/samplefmt.h>
 #include <libavutil/timestamp.h>
 #include <libavformat/avformat.h>
-
 }
 #undef main
 
